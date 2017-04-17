@@ -1,7 +1,8 @@
 
 
 # ChatSocket
-
+This is chat socket server. 
+node.js express.js redis is used.
 
 
 ## Usage
