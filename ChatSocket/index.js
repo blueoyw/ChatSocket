@@ -31,9 +31,26 @@ io.on('connection', function(socket) { //conneted call back
 });
 
 //redis message
+var g_channel;
 client.on("message", function( channel, message ){
-	console.log("sub channel " + channel + ": " + message);	    	
-	io.emit('chat message', message);
+	console.log("sub channel " + channel + "->" + message);	    	
+	if( channel === 'http://localhost') {
+		var msg = message.split("|");
+		if( msg[0] === 'crte') {
+			//redis subscribe chat room
+			g_channel = msg[1];
+			client.subscribe( g_channel );
+		}
+	} else {  // room channel
+		
+		console.log ( g_channel );
+		if( g_channel === channel ) {	
+			console.log( message );
+			io.emit(channel, message);		
+		}
+					
+	}
+	
 	/*
     sub.unsubscribe();
     sub.quit();
@@ -45,7 +62,9 @@ http.listen(port, function() {
 	console.log('listening on *:' + port);
 });
 
-//redis subscribe
-client.subscribe("chat");
+//<->rest server manage channel
+client.subscribe("http://localhost");
+
+
 //client.unsubscribe();
 //client.quit();
